@@ -1,0 +1,14 @@
+{
+  "name": "lambda-aws",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.mts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "pg": "^8.23.0"
+  }
+}
