@@ -1,21 +1,21 @@
 export const handler = async (event : any) => {
     // Ejecutar solo cuando el usuario confirme su registro (Sign Up)
     if (event.triggerSource === "PostConfirmation_ConfirmSignUp") {
-        const { sub, email, name, 'custom:phone': customPhone } = event.request.userAttributes;
+        const { sub, email_usuario, sapellido_usuario, papellido_usuario, nombre_usuario } = event.request.userAttributes;
 
-        const SUPABASE_URL = 
+        const SUPABASE_URL = process.env.SUPABASE_SERVICE_ROLE_KEY;
         const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
         const payload = {
-            id: sub, // ID único de Cognito
-            email: email,
-            full_name: name || null,
-            phone: customPhone || null,
-            created_at: new Date().toISOString()
+            id_usuario: sub, // ID único de Cognito
+            nombre_usuario: nombre_usuario,
+            email_usuario : email_usuario,
+            papellido_usuario: papellido_usuario,
+            sapellido_usuario: sapellido_usuario
         };
 
         try {
-            const response = await fetch(`${SUPABASE_URL}/rest/v1/profiles`, {
+            const response = await fetch(`${SUPABASE_URL}/rest/v1/usuario`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
