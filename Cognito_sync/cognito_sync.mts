@@ -3,7 +3,7 @@ export const handler = async (event : any) => {
     if (event.triggerSource === "PostConfirmation_ConfirmSignUp") {
         const { sub, email_usuario, sapellido_usuario, papellido_usuario, nombre_usuario } = event.request.userAttributes;
 
-        const SUPABASE_URL = process.env.SUPABASE_SERVICE_ROLE_KEY;
+        const SUPABASE_URL = process.env.SUPABASE_URL;
         const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
         const payload = {
