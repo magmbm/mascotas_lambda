@@ -1,5 +1,4 @@
 export const handler = async (event : any) => {
-    // Ejecutar solo cuando el usuario confirme su registro (Sign Up)
     if (event.triggerSource === "PostConfirmation_ConfirmSignUp") {
         const { sub, email_usuario, sapellido_usuario, papellido_usuario, nombre_usuario } = event.request.userAttributes;
 
