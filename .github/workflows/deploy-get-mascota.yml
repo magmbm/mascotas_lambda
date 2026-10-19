@@ -1,0 +1,57 @@
+name: Deploy GET Mascotas
+
+on:
+  push:
+    branches:
+      - main
+    
+    paths:
+      - 'CRUD mascota/get_mascota.mts'
+      - 'package.json'
+      - 'package-lock.json'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout del código
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Instalar dependencias
+        run: npm ci
+
+      # Compilamos especificando la ruta exacta del archivo .mts
+      - name: Compilar con esbuild
+        run: |
+          npx esbuild CRUD mascota/get_mascota.mts \
+            --bundle \
+            --platform=node \
+            --target=node20 \
+            --format=cjs \
+            --outfile=dist/index.js
+
+      # Empaquetamos únicamente el archivo compilado (index.js)
+      - name: Empaquetar a .zip
+        run: |
+          cd dist
+          zip function.zip index.js
+
+      - name: Configurar credenciales de AWS
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Desplegar a AWS Lambda
+        run: |
+          aws lambda update-function-code \
+            --function-name get_mascota \
+            --zip-file fileb://dist/function.zip
