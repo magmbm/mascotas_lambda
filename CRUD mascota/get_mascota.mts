@@ -62,11 +62,11 @@ export const handler= async (event : any) => {
                 body : JSON.stringify(mascotas)
             };
 
-        } catch {
+        } catch (err : any){
             return {
                 statusCode: 500,
                 body : {
-                    error : "Fallo al consultar a la BD"
+                    error : "Fallo al consultar a la BD: " + err
                 }
             }
         }
