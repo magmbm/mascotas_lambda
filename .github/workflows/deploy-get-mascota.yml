@@ -29,7 +29,7 @@ jobs:
       # Compilamos especificando la ruta exacta del archivo .mts
       - name: Compilar con esbuild
         run: |
-          npx esbuild CRUD mascota/get_mascota.mts \
+          npx esbuild "CRUD mascota/get_mascota.mts" \
             --bundle \
             --platform=node \
             --target=node20 \
