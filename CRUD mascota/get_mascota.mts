@@ -22,13 +22,16 @@ const pool = new Pool({
 
 });
 
-const fetch_by_id= 'SELECT * FROM mascotas WHERE id_mascota= ?;';
+const fetch_by_id= 'SELECT * FROM mascotas WHERE id_mascota= $1;';
 const fetch_all= 'SELECT * FROM mascotas;';
         
 
 export const handler= async (event : any) => {
     const conexion= await pool.connect();
     try {
+        const headers = event.headers || event.header || {};
+        const id_mascota = headers.id_mascota || headers['id_mascota'];
+
         if (event.method!= "GET") {
             return  {
                 statusCode : 403,
@@ -38,8 +41,8 @@ export const handler= async (event : any) => {
             }
         }
         try {
-            if (event.header.id_mascota!= null) {
-                const res= await conexion.query(fetch_by_id, event.header.id_mascota);
+            if (id_mascota!= null) {
+                const res= await conexion.query(fetch_by_id, [id_mascota]);
                 const mascota : mascota= {
                     id_mascota : res.rows[0].id_mascota,
                     peso_mascota : res.rows[0].peso_mascota,
