@@ -42,7 +42,7 @@ export const handler= async (event : any) => {
         }
         try {
             if (id_mascota!= null) {
-                const res= await conexion.query(fetch_by_id, [id_mascota]);
+                const res= await conexion.query(fetch_by_id, [parseInt(id_mascota)]);
                 const mascota : mascota= {
                     id_mascota : res.rows[0].id_mascota,
                     peso_mascota : res.rows[0].peso_mascota,
