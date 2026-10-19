@@ -10,6 +10,8 @@ export type mascota= {
     sexo : string
 }
 
+//
+
 const SUPABASE_PASS= process.env.SUPABASE_PASS;
 
 const pool = new Pool({
