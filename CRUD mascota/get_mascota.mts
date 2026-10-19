@@ -41,7 +41,7 @@ export const handler= async (event : any) => {
             }
         }
         try {
-            if (id_mascota!= null) {
+            if (check_id(id_mascota)) {
                 const res= await conexion.query(fetch_by_id, [parseInt(id_mascota)]);
                 const mascota : mascota= {
                     id_mascota : res.rows[0].id_mascota,
@@ -58,6 +58,7 @@ export const handler= async (event : any) => {
                     body : JSON.stringify(mascota)
                 };
             }
+            
             const res= await conexion.query(fetch_all);
             const mascotas : mascota[]= res.rows;
             return {
@@ -82,4 +83,17 @@ export const handler= async (event : any) => {
             }
         }
     }
+}
+
+const check_id= (id_mascota : string) => {
+    try {
+        let id= parseInt(id_mascota);
+        if (id > 0) {
+            return true;
+        }
+        return false;
+    } catch {
+        return false;
+    }
+
 }
