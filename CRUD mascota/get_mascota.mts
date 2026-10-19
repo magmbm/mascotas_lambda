@@ -16,7 +16,7 @@ const SUPABASE_PASS= process.env.SUPABASE_PASS;
 
 const pool = new Pool({
 
-    connectionString: `postgresql://postgres.bvnqhgqcvvnaufseuhye:${SUPABASE_PASS}@aws-0-us-east-2.pooler.supabase.com:5432/postgres`;
+    connectionString: `postgresql://postgres.bvnqhgqcvvnaufseuhye:${SUPABASE_PASS}@aws-0-us-east-2.pooler.supabase.com:5432/postgres`,
 
     ssl: { rejectUnauthorized: false }
 
