@@ -3,9 +3,11 @@ import { registrar_mascota } from "./post_mascota.mts";
 const { Pool } = require('pg');
 
 //
+
+const SUPABASE_PASSWORD= process.env.SUPABASE_PASSWORD;
 export const pool = new Pool({
 
-    connectionString: "postgresql://postgres.bvnqhgqcvvnaufseuhye:s09_BAs3$_pl0@aws-0-us-east-2.pooler.supabase.com:5432/postgres",
+    connectionString: `postgresql://postgres.bvnqhgqcvvnaufseuhye:${SUPABASE_PASSWORD}@aws-0-us-east-2.pooler.supabase.com:5432/postgres`,
 
     ssl: { rejectUnauthorized: false }
 
