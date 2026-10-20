@@ -11,13 +11,17 @@ const INSERT_QUERY = `
 export const registrar_mascota= async (mascota : mascota_insert) => {
     const conexion= await pool.connect();
     try {
-        const res= conexion.query(INSERT_QUERY, [mascota])
-        if (res.rowCount > 0) {
-            console.log(res);
-            console.log(`Successfully deleted ${res.rowCount} record(s).`);
+        const res= await conexion.query(INSERT_QUERY, [mascota])
+        if (res.rowCount && res.rowCount > 0) {
+            return {
+                statusCode: 201,
+                body: JSON.stringify(res.rows[0])
+            };
         } else {
-            console.log(res);
-            console.log("Error");
+            return {
+                statusCode: 400,
+                body: JSON.stringify({ error: "No se pudo insertar el registro" })
+            };
         }
 
     } catch {
