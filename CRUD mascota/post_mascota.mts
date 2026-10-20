@@ -11,10 +11,16 @@ const INSERT_QUERY = `
 export const registrar_mascota= async (mascota : mascota) => {
     const conexion= await pool.connect();
     try {
-        const res= conexion.query(INSERT_QUERY, mascota)
+        const res= conexion.query(INSERT_QUERY, [mascota])
+        if (res.status== "ok") {
+            return {
+                statusCode : 201,
+                body : JSON.stringify(mascota)
+            }
+        }
+
         return {
-            statusCode : 201,
-            body : JSON.stringify(mascota)
+            statusCode : 400
         }
     } catch {
         return {
