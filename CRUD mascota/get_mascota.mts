@@ -53,18 +53,12 @@ export const handler= async (event : any) => {
                     especie : res.rows[0].especie
                 }
 
-                return {
-                    statusCode : 200,
-                    body : JSON.stringify(mascota)
-                };
+                return mascota;
             }
-            
+
             const res= await conexion.query(fetch_all);
             const mascotas : mascota[]= res.rows;
-            return {
-                statusCode : 200,
-                body : JSON.stringify(mascotas)
-            };
+            return mascotas;
 
         } catch (err : any){
             return {
@@ -95,5 +89,4 @@ const check_id= (id_mascota : string) => {
     } catch {
         return false;
     }
-
 }
