@@ -16,7 +16,8 @@ export const registrar_mascota= async (mascota : mascota) => {
             console.log(res);
             console.log(`Successfully deleted ${res.rowCount} record(s).`);
         } else {
-            console.log("Query ran successfully, but no record matched that ID.");
+            console.log(res);
+            console.log("Error");
         }
 
     } catch {
