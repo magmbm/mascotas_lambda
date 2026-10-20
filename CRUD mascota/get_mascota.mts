@@ -76,6 +76,8 @@ export const handler= async (event : any) => {
                 error : "No fue posible procesar la peticion"
             }
         }
+    } finally {
+        conexion.release();
     }
 }
 
