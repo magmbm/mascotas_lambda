@@ -8,6 +8,7 @@ on:
     paths:
       - 'CRUD mascota/post_mascota.mts'
       - 'CRUD mascota/delete_mascota.mts'
+      - 'CRUD mascota/crud_mascota.mts'
       - 'package.json'
       - 'package-lock.json'
 
