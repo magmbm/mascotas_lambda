@@ -44,12 +44,12 @@ export const handler= async (event : any) => {
 
         if (metodo== "POST") {
             const mascota : mascota_insert= {
-                nombre_mascota : event.body.nombre_mascota,
-                peso_mascota : event.body.peso_mascota,
-                edad_mascota : event.body.edad_mascota,
-                sexo : event.body.sexo,
-                especie : event.body.especie,
-                vacunado : event.body.vacunado,
+                nombre_mascota : body.nombre_mascota,
+                peso_mascota :   body.peso_mascota,
+                edad_mascota :   body.edad_mascota,
+                sexo :           body.sexo,
+                especie :        body.especie,
+                vacunado :       body.vacunado,
             }
             return await registrar_mascota(mascota);
         }
