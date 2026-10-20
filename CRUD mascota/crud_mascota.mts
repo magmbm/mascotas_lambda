@@ -1,4 +1,4 @@
-import { mascota } from "./types.mts";
+import { mascota, mascota_insert } from "./types.mts";
 import { registrar_mascota } from "./post_mascota.mts";
 const { Pool } = require('pg');
 
@@ -43,8 +43,7 @@ export const handler= async (event : any) => {
         }
 
         if (metodo== "POST") {
-            const mascota : mascota = {
-                id_mascota : 0,
+            const mascota : mascota_insert= {
                 nombre_mascota : event.body.nombre_mascota,
                 peso_mascota : event.body.peso_mascota,
                 edad_mascota : event.body.edad_mascota,

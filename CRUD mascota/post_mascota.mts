@@ -1,4 +1,4 @@
-import { mascota } from "./types.mts";
+import { mascota, mascota_insert } from "./types.mts";
 import { pool } from "./crud_mascota.mts";
 
 
@@ -8,7 +8,7 @@ const INSERT_QUERY = `
     RETURNING *;
 `;
 
-export const registrar_mascota= async (mascota : mascota) => {
+export const registrar_mascota= async (mascota : mascota_insert) => {
     const conexion= await pool.connect();
     try {
         const res= conexion.query(INSERT_QUERY, [mascota])
