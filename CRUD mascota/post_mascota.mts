@@ -12,16 +12,13 @@ export const registrar_mascota= async (mascota : mascota) => {
     const conexion= await pool.connect();
     try {
         const res= conexion.query(INSERT_QUERY, [mascota])
-        if (res.status== "ok") {
-            return {
-                statusCode : 201,
-                body : JSON.stringify(mascota)
-            }
+        if (res.rowCount > 0) {
+            console.log(res);
+            console.log(`Successfully deleted ${res.rowCount} record(s).`);
+        } else {
+            console.log("Query ran successfully, but no record matched that ID.");
         }
 
-        return {
-            statusCode : 400
-        }
     } catch {
         return {
             statusCode : 500,

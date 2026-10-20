@@ -10,14 +10,13 @@ export const registrar_mascota= async (id : number) => {
     const conexion= await pool.connect();
     try {
         const res= conexion.query(DELETE_QUERY, [id])
-
-        if (res.status== "ok")
-            return {
-                statusCode : 204,
-            }
-        return {
-            statusCode: 400
+        if (res.rowCount > 0) {
+            console.log(res);
+            console.log(`Successfully deleted ${res.rowCount} record(s).`);
+        } else {
+            console.log("Query ran successfully, but no record matched that ID.");
         }
+
     } catch (err : any) {
         return {
             statusCode : 500,
