@@ -11,7 +11,15 @@ const INSERT_QUERY = `
 export const registrar_mascota= async (mascota : mascota_insert) => {
     const conexion= await pool.connect();
     try {
-        const res= await conexion.query(INSERT_QUERY, [mascota])
+        const res= await conexion.query(INSERT_QUERY, [
+            mascota.nombre_mascota,
+            mascota.especie,
+            mascota.sexo,
+            mascota.peso_mascota,
+            mascota.vacunado,
+            mascota.edad_mascota
+        ])
+
         if (res.rowCount && res.rowCount > 0) {
             return {
                 statusCode: 201,
