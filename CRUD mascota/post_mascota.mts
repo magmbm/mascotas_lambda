@@ -24,11 +24,11 @@ export const registrar_mascota= async (mascota : mascota_insert) => {
             };
         }
 
-    } catch {
+    } catch (err : any){
         return {
             statusCode : 500,
             body : {
-                error : "No fue posible procesar la peticion"
+                error : "No fue posible procesar la peticion: " + err
             }
         }
     } finally {
