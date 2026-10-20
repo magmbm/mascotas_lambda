@@ -1,0 +1,49 @@
+name: Deploy CRUD Mascotas
+
+on:
+  push:
+    branches:
+      - main
+    
+    paths:
+      - 'CRUD mascota/post_mascota.mts'
+      - 'CRUD mascota/delete_mascota.mts'
+      - 'package.json'
+      - 'package-lock.json'
+jobs:
+  deploy-lambda:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout del código
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Instalar dependencias
+        run: |
+          npm ci
+
+      - name: Compilar y empaquetar código TypeScript
+        run: |
+          # 1. Empaqueta index.mts y sus importaciones (post, delete, types, pg) en un solo index.js
+          npx esbuild index.mts --bundle --platform=node --target=node20 --outfile=index.js
+          
+          # 2. Comprime el archivo resultante en un ZIP listo para Lambda
+          zip function.zip index.js
+
+      - name: Desplegar a AWS Lambda
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }} # Requerido si usas AWS Academy / Learner Lab
+          AWS_DEFAULT_REGION: 'us-east-1'
+        run: |
+          aws lambda update-function-code \
+            --function-name crud_mascotas \
+            --zip-file fileb://function.zip \
+            --region us-east-1

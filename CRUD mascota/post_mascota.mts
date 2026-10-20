@@ -1,28 +1,16 @@
-const { Pool } = require('pg');
 import { mascota } from "./types.mts";
+import { pool } from "./crud_mascota.mts";
 
-const pool = new Pool({
 
-    connectionString: "postgresql://postgres.bvnqhgqcvvnaufseuhye:s09_BAs3$_pl0@aws-0-us-east-2.pooler.supabase.com:5432/postgres",
+const INSERT_QUERY = `
+    INSERT INTO mascotas (nombre_mascota, especie, sexo, peso_mascota, vacunado, edad_mascota) 
+    VALUES ($1, $2, $3, $4, $5, $6) 
+    RETURNING *;
+`;
 
-    ssl: { rejectUnauthorized: false }
-
-});
-
-const INSERT_QUERY= "INSERT INTO mascotas (nombre_mascota, especie, sexo, peso_mascota, vacunado, edad_mascota) VALUES(?, ?, ?, ?, ?, ?)";
-
-export const handler= async (event : any) => {
+export const registrar_mascota= async (mascota : mascota) => {
+    const conexion= await pool.connect();
     try {
-        const mascota : mascota = {
-            id_mascota : 0,
-            nombre_mascota : event.body.nombre_mascota,
-            peso_mascota : event.body.peso_mascota,
-            edad_mascota : event.body.edad_mascota,
-            sexo : event.body.sexo,
-            especie : event.body.especie,
-            vacunado : event.body.vacunado,
-        }
-        const conexion= await pool.connect();
         const res= conexion.query(INSERT_QUERY, mascota)
         return {
             statusCode : 201,
@@ -35,5 +23,7 @@ export const handler= async (event : any) => {
                 error : "No fue posible procesar la peticion"
             }
         }
+    } finally {
+        conexion.release();
     }
 }
