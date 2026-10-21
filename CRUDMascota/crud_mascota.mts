@@ -22,9 +22,6 @@ import type { RespuestaLambda } from "./utils/respuestas.mts";
 
 const revisionDeMetodo = (metodo: string): boolean => METODOS_PERMITIDOS.includes(metodo);
 
-/**
- * Conversion del body recibido al objeto JSON requerido por los servicios.
- */
 const obtenerBody = (event: any): any => {
     const body = event?.body;
 
