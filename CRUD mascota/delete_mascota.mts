@@ -6,16 +6,11 @@ const DELETE_QUERY = `
     DELETE FROM mascotas WHERE id_mascota= $1;
 `;
 
-export const registrar_mascota= async (id : number) => {
+export const eliminar_mascota= async (id : number) => {
     const conexion= await pool.connect();
     try {
-        const res= conexion.query(DELETE_QUERY, [id])
-        if (res.rowCount > 0) {
-            console.log(res);
-            console.log(`Successfully deleted ${res.rowCount} record(s).`);
-        } else {
-            console.log("Query ran successfully, but no record matched that ID.");
-        }
+        const res= await conexion.query(DELETE_QUERY, [id])
+        return res;
 
     } catch (err : any) {
         return {
