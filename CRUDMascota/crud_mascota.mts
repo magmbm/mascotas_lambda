@@ -18,6 +18,7 @@ import type { RespuestaLambda } from "./utils/respuestas.mts";
  * Handler (controller) de la lambda CRUD.
  * Solo resuelve el metodo HTTP, convierte el body al objeto requerido,
  * delega la logica de negocios en los servicios y arma la respuesta HTTP.
+ * i
  */
 
 const revisionDeMetodo = (metodo: string): boolean => METODOS_PERMITIDOS.includes(metodo);
