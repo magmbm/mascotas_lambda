@@ -57,7 +57,7 @@ export const handler= async (event : any) => {
                 return await registrar_mascota(mascota);
             case "DELETE":
                 const id_por_eliminar= headers.id_mascota || headers["id_mascota"];
-                if (id_por_eliminar== null) {
+                if (!isNaN(id_por_eliminar)) {
                     return await eliminar_mascota(id_por_eliminar);
                 }
         }
