@@ -7,6 +7,11 @@ on:
     
     paths:
       - 'CRUD mascota/get_mascota.mts'
+      - 'CRUD mascota/services/**'
+      - 'CRUD mascota/repositories/**'
+      - 'CRUD mascota/config/**'
+      - 'CRUD mascota/utils/**'
+      - 'CRUD mascota/types.mts'
       - 'package.json'
       - 'package-lock.json'
 

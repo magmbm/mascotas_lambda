@@ -4,11 +4,10 @@ on:
   push:
     branches:
       - main
-    
+
     paths:
-      - 'CRUD mascota/post_mascota.mts'
-      - 'CRUD mascota/delete_mascota.mts'
-      - 'CRUD mascota/crud_mascota.mts'
+      - 'CRUDMascota/**'
+      - 'tsconfig.build.json'
       - 'package.json'
       - 'package-lock.json'
 
@@ -27,23 +26,51 @@ jobs:
           cache: 'npm'
 
       - name: Instalar dependencias
-        run: |
-          npm ci
+        run: npm ci
 
-      - name: Compilar y empaquetar código TypeScript
+      # Compila cada .mts a .mjs conservando la estructura de carpetas
+      # (config/, repositories/, services/, utils/) en dist/.
+      - name: Compilar TypeScript
+        run: npm run build:crud
+
+      # La lambda ya no va empaquetada en un solo archivo, por lo que
+      # las dependencias de producción (pg) deben viajar en el zip.
+      - name: Dejar solo dependencias de producción
+        run: npm prune --omit=dev
+
+      - name: Empaquetar la lambda
         run: |
-          # Importante usar comillas por el espacio en la carpeta "CRUD mascota"
-          npx esbuild "CRUD mascota/crud_mascota.mts" --bundle --platform=node --target=node20 --outfile=index.js
-          zip function.zip index.js
+          # package.json mínimo: declara ESM y la dependencia de pg
+          cat > dist/package.json <<'JSON'
+          {
+            "name": "crud-mascota",
+            "version": "1.0.0",
+            "type": "module",
+            "dependencies": {
+              "pg": "^8.23.0"
+            }
+          }
+          JSON
+          # El handler debe quedar en la raíz del zip: dist/ se comprime con "." al frente
+          cd dist
+          zip -r ../function.zip . -x "*.map" "*.ts"
+          cd ..
+          zip -r function.zip node_modules -x "*.md" "*.map" "*.ts" "*.DS_Store"
+          unzip -l function.zip | head -30
 
       - name: Desplegar a AWS Lambda
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }} # Obligatorio para AWS Learner Lab
-          AWS_DEFAULT_REGION: 'us-east-1' # Cambia a 'us-east-2' si tu Lambda fue creada en Ohio
+          AWS_DEFAULT_REGION: ${{ secrets.AWS_REGION || 'us-east-1' }} # Cambia a 'us-east-2' si tu Lambda fue creada en Ohio
         run: |
           aws lambda update-function-code \
             --function-name crud_mascotas \
             --zip-file fileb://function.zip \
-            --region us-east-1
+            --region "$AWS_DEFAULT_REGION"
+          # El handler ahora es un archivo propio, no el bundle index.js
+          aws lambda update-function-configuration \
+            --function-name crud_mascotas \
+            --handler crud_mascota.handler \
+            --region "$AWS_DEFAULT_REGION"
