@@ -70,7 +70,11 @@ jobs:
             --function-name crud_mascotas \
             --zip-file fileb://function.zip \
             --region "$AWS_DEFAULT_REGION"
-          # El handler ahora es un archivo propio, no el bundle index.js
+
+          aws lambda wait function-updated \
+            --function-name crud_mascotas \
+            --region "$AWS_DEFAULT_REGION"
+
           aws lambda update-function-configuration \
             --function-name crud_mascotas \
             --handler crud_mascota.handler \
