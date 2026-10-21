@@ -49,6 +49,7 @@ jobs:
             "dependencies": {
               "pg": "^8.23.0"
             }
+            "main" : "crud_mascota.mts"
           }
           JSON
           # El handler debe quedar en la raíz del zip: dist/ se comprime con "." al frente
