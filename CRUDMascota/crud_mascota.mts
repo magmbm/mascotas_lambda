@@ -42,7 +42,7 @@ const obtenerBody = (event: any): any => {
     }
 };
 
-export const handler = async (event: any): Promise<RespuestaLambda> => {
+export const handler = async (event: any): Promise<unknown> => {
     try {
         const metodo = String(event?.method || event?.httpMethod || "").toUpperCase();
         const headers = event?.headers || event?.header || {};
@@ -57,7 +57,7 @@ export const handler = async (event: any): Promise<RespuestaLambda> => {
             case "GET": {
                 const mascotas= await obtenerTodasLasMascotas();
 
-                return respuestaOk(mascotas);
+                return mascotas;
             }
 
             case "POST": {
