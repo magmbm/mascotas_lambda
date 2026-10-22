@@ -1,6 +1,6 @@
 import { COLUMNAS_MASCOTA } from "../config/const.mts";
 import { mascotaRepository } from "../repositories/MascotaRepository.mts";
-import type { Mascota, MascotaUpdate } from "../types.mts";
+import type { Mascota, MascotaUpdate } from "../utils/types.mts";
 import { ErrorNoEncontrado, ErrorValidacion } from "../utils/errores.mts";
 
 /**

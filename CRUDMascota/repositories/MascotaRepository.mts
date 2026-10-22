@@ -1,6 +1,6 @@
 import { pool } from "../config/dbConfig.mts";
 import { COLUMNAS_MASCOTA, TABLA_MASCOTAS } from "../config/const.mts";
-import type { Mascota, MascotaInsert, MascotaUpdate } from "../types.mts";
+import type { Mascota, MascotaInsert, MascotaUpdate } from "../utils/types.mts";
 
 const QUERY_INSERTAR = `
     INSERT INTO ${TABLA_MASCOTAS} (${COLUMNAS_MASCOTA.join(", ")})

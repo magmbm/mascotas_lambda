@@ -1,5 +1,5 @@
 import { mascotaRepository } from "../repositories/MascotaRepository.mts";
-import type { Mascota } from "../types.mts";
+import type { Mascota } from "../utils/types.mjs";
 import { ErrorNoEncontrado, ErrorValidacion } from "../utils/errores.mts";
 
 /**

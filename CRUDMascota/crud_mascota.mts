@@ -2,7 +2,7 @@ import { METODOS_PERMITIDOS } from "./config/const.mts";
 import { registrarMascota } from "./services/postMascotaService.mts";
 import { actualizarMascota } from "./services/putMascotaService.mts";
 import { eliminarMascota } from "./services/deleteMascotaService.mts";
-import type { MascotaInsert, MascotaUpdate } from "./types.mts";
+import type { MascotaInsert, MascotaUpdate } from "./utils/types.mjs"
 import { ErrorValidacion } from "./utils/errores.mts";
 import { obtenerIdMascota } from "./utils/parametros.mts";
 import {
@@ -13,6 +13,7 @@ import {
     respuestaProhibido
 } from "./utils/respuestas.mts";
 import type { RespuestaLambda } from "./utils/respuestas.mts";
+import { obtenerTodasLasMascotas } from "./services/getMascotaService.mts";
 
 /**
  * Handler (controller) de la lambda CRUD.
@@ -53,6 +54,12 @@ export const handler = async (event: any): Promise<RespuestaLambda> => {
         const body = obtenerBody(event);
 
         switch (metodo) {
+            case "GET": {
+                const mascotas= await obtenerTodasLasMascotas();
+
+                return respuestaOk(mascotas);
+            }
+
             case "POST": {
                 const mascota: MascotaInsert = body;
                 const mascotaCreada = await registrarMascota(mascota);
