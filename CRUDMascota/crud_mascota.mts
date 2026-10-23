@@ -75,26 +75,23 @@ export const handler = async (event: any): Promise<unknown> => {
                 const id = obtenerIdMascota(headers);
 
                 if (id === undefined) {
-                    return respuestaNoValido("Debe enviar un id de mascota valido para actualizar");
+                    return null;
                 }
 
                 const mascotaActualizada = await actualizarMascota(id, cambios);
 
-                return respuestaOk(mascotaActualizada);
+                return mascotaActualizada;
             }
             case "DELETE": {
                 const id = obtenerIdMascota(headers);
 
                 if (id === undefined) {
-                    return respuestaNoValido("Debe enviar un id de mascota valido para eliminar");
+                    return null;
                 }
 
                 const mascotaEliminada = await eliminarMascota(id);
 
-                return respuestaOk({
-                    mensaje: "La mascota fue eliminada correctamente",
-                    mascota: mascotaEliminada
-                });
+                return mascotaEliminada
             }
             default:
                 return respuestaProhibido("Metodo no permitido para esta funcion");
