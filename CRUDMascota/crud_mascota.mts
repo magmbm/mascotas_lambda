@@ -13,7 +13,7 @@ import {
     respuestaProhibido
 } from "./utils/respuestas.mts";
 import type { RespuestaLambda } from "./utils/respuestas.mts";
-import { obtenerTodasLasMascotas } from "./services/getMascotaService.mts";
+import { obtenerMascotaPorId, obtenerTodasLasMascotas } from "./services/getMascotaService.mts";
 
 /**
  * Handler (controller) de la lambda CRUD.
@@ -55,6 +55,10 @@ export const handler = async (event: any): Promise<unknown> => {
 
         switch (metodo) {
             case "GET": {
+                if (headers.id_mascota!= null) {
+                    const mascotas= await obtenerMascotaPorId(headers.id_mascota);
+                    return mascotas
+                }
                 const mascotas= await obtenerTodasLasMascotas();
 
                 return mascotas;
@@ -64,7 +68,7 @@ export const handler = async (event: any): Promise<unknown> => {
                 const mascota: MascotaInsert = body;
                 const mascotaCreada = await registrarMascota(mascota);
 
-                return respuestaCreada(mascotaCreada);
+                return mascotaCreada;
             }
             case "PUT": {
                 const cambios: MascotaUpdate = body;
