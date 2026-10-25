@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-
     paths:
       - 'CRUDUsuarios/**'
       - 'tsconfig.build.json'
@@ -28,19 +27,15 @@ jobs:
       - name: Instalar dependencias
         run: npm ci
 
-      # Compila cada .mts a .mjs conservando la estructura de carpetas
-      # (config/, repositories/, services/, utils/) en dist/.
       - name: Compilar TypeScript
         run: npm run build:crud
 
-      # La lambda ya no va empaquetada en un solo archivo, por lo que
-      # las dependencias de producción (pg) deben viajar en el zip.
       - name: Dejar solo dependencias de producción
         run: npm prune --omit=dev
 
       - name: Empaquetar la lambda
         run: |
-          # package.json mínimo: declara ESM y la dependencia de pg
+          # 1. Crear package.json mínimo para ESM
           cat > dist/package.json <<'JSON'
           {
             "name": "crud_usuario",
@@ -48,23 +43,30 @@ jobs:
             "type": "module",
             "dependencies": {
               "pg": "^8.23.0"
-            },
-            "main" : "crud_usuario.mts"
+            }
           }
           JSON
-          # El handler debe quedar en la raíz del zip: dist/ se comprime con "." al frente
+
+          # 2. Si el compilado quedó dentro de dist/CRUDUsuarios/, mover su contenido a la raíz de dist/
+          if [ -d "dist/CRUDUsuarios" ]; then
+            cp -r dist/CRUDUsuarios/* dist/
+          fi
+
+          # 3. Comprimir desde la raíz de dist/
           cd dist
           zip -r ../function.zip . -x "*.map" "*.ts"
           cd ..
           zip -r function.zip node_modules -x "*.md" "*.map" "*.ts" "*.DS_Store"
-          unzip -l function.zip | head -30
+
+          # 4. Mostrar el contenido del zip para verificar que crud_usuario.mjs / .js esté en la raíz
+          unzip -l function.zip | head -20
 
       - name: Desplegar a AWS Lambda
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }} # Obligatorio para AWS Learner Lab
-          AWS_DEFAULT_REGION: ${{ secrets.AWS_REGION || 'us-east-1' }} # Cambia a 'us-east-2' si tu Lambda fue creada en Ohio
+          AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }}
+          AWS_DEFAULT_REGION: ${{ secrets.AWS_REGION || 'us-east-1' }}
         run: |
           aws lambda update-function-code \
             --function-name crud_usuarios \
