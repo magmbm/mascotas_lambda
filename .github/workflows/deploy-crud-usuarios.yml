@@ -43,7 +43,7 @@ jobs:
           # package.json mínimo: declara ESM y la dependencia de pg
           cat > dist/package.json <<'JSON'
           {
-            "name": "crud-usuario",
+            "name": "crud_usuario",
             "version": "1.0.0",
             "type": "module",
             "dependencies": {
