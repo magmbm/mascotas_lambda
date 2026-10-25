@@ -14,7 +14,8 @@ const REGLAS: [keyof CitaInsert, (valor: unknown) => boolean, string][] = [
         "El campo 'fecha_hora_cita' debe ser una fecha valida (ISO 8601)"
     ],
     ["motivo_cita", (valor) => typeof valor === "string", "El campo 'motivo_cita' debe ser un texto"],
-    ["fk_owner", (valor) => typeof valor === "number" && Number.isInteger(valor), "El campo 'fk_owner' debe ser un numero entero"]
+    ["fk_owner", (valor) => typeof valor === "number" && Number.isInteger(valor), "El campo 'fk_owner' debe ser un numero entero"],
+    ["fk_vet", (valor) => typeof valor === "number" && Number.isInteger(valor), "El campo 'fk_vet' debe ser un numero entero"]
 ];
 
 /**
