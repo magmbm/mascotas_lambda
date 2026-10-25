@@ -36,7 +36,7 @@ export const COLUMNAS_USUARIO = [
 ];
 
 // --- Metodos HTTP soportados por la lambda CRUD ---
-export const METODOS_PERMITIDOS: string[] = ["POST", "PUT", "GET"];
+export const METODOS_PERMITIDOS: string[] = ["POST", "PUT", "DELETE", "GET"];
 
 /**
  * Obtiene la password de la base de datos desde las variables de entorno.
