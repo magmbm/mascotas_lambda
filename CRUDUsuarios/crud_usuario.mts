@@ -1,10 +1,10 @@
 import { METODOS_PERMITIDOS } from "./config/const.mts";
-import { registrarMascota } from "./services/postUsuarioService.mts";
-import { actualizarMascota } from "./services/putUsuarioService.mts";
-import { eliminarMascota } from "./services/deleteUsuarioService.mts";
-import type { MascotaInsert, MascotaUpdate } from "./utils/types.mjs"
+import { registrarUsuario } from "./services/postUsuarioService.mts";
+import { actualizarUsuario } from "./services/putUsuarioService.mts";
+import { eliminarUsuario } from "./services/deleteUsuarioService.mts";
+import type { UsuarioInsert, UsuarioUpdate } from "./utils/types.mjs"
 import { ErrorValidacion } from "./utils/errores.mts";
-import { obtenerIdMascota } from "./utils/parametros.mts";
+import { obtenerIdUsuario } from "./utils/parametros.mts";
 import {
     responderError,
     respuestaCreada,
@@ -13,7 +13,7 @@ import {
     respuestaProhibido
 } from "./utils/respuestas.mts";
 import type { RespuestaLambda } from "./utils/respuestas.mts";
-import { obtenerMascotaPorId, obtenerTodasLasMascotas } from "./services/getUsuarioService.mts";
+import { obtenerUsuarioPorId, obtenerTodosLosUsuarios } from "./services/getUsuarioService.mts";
 
 /**
  * Handler (controller) de la lambda CRUD.
@@ -55,43 +55,43 @@ export const handler = async (event: any): Promise<unknown> => {
 
         switch (metodo) {
             case "GET": {
-                if (headers.id_mascota!= null) {
-                    const mascotas= await obtenerMascotaPorId(headers.id_mascota);
-                    return mascotas
+                if (headers.id_usuario!= null) {
+                    const usuarios= await obtenerUsuarioPorId(headers.id_usuario);
+                    return usuarios
                 }
-                const mascotas= await obtenerTodasLasMascotas();
+                const usuarios= await obtenerTodosLosUsuarios();
 
-                return mascotas;
+                return usuarios;
             }
 
             case "POST": {
-                const mascota: MascotaInsert = body;
-                const mascotaCreada = await registrarMascota(mascota);
+                const usuario: UsuarioInsert = body;
+                const usuarioCreada = await registrarUsuario(usuario);
 
-                return mascotaCreada;
+                return usuarioCreada;
             }
             case "PUT": {
-                const cambios: MascotaUpdate = body;
-                const id = obtenerIdMascota(headers);
+                const cambios: UsuarioUpdate = body;
+                const id = obtenerIdUsuario(headers);
 
                 if (id === undefined) {
                     return null;
                 }
 
-                const mascotaActualizada = await actualizarMascota(id, cambios);
+                const usuarioActualizada = await actualizarUsuario(id, cambios);
 
-                return mascotaActualizada;
+                return usuarioActualizada;
             }
             case "DELETE": {
-                const id = obtenerIdMascota(headers);
+                const id = obtenerIdUsuario(headers);
 
                 if (id === undefined) {
                     return null;
                 }
 
-                const mascotaEliminada = await eliminarMascota(id);
+                const usuarioEliminada = await eliminarUsuario(id);
 
-                return mascotaEliminada
+                return usuarioEliminada
             }
             default:
                 return respuestaProhibido("Metodo no permitido para esta funcion");
