@@ -1,0 +1,81 @@
+name: Deploy CRUD Usuarios
+
+on:
+  push:
+    branches:
+      - main
+
+    paths:
+      - 'CRUDUsuarios/**'
+      - 'tsconfig.build.json'
+      - 'package.json'
+      - 'package-lock.json'
+
+jobs:
+  deploy-lambda:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout del código
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Instalar dependencias
+        run: npm ci
+
+      # Compila cada .mts a .mjs conservando la estructura de carpetas
+      # (config/, repositories/, services/, utils/) en dist/.
+      - name: Compilar TypeScript
+        run: npm run build:crud
+
+      # La lambda ya no va empaquetada en un solo archivo, por lo que
+      # las dependencias de producción (pg) deben viajar en el zip.
+      - name: Dejar solo dependencias de producción
+        run: npm prune --omit=dev
+
+      - name: Empaquetar la lambda
+        run: |
+          # package.json mínimo: declara ESM y la dependencia de pg
+          cat > dist/package.json <<'JSON'
+          {
+            "name": "crud-usuario",
+            "version": "1.0.0",
+            "type": "module",
+            "dependencies": {
+              "pg": "^8.23.0"
+            },
+            "main" : "crud_usuario.mts"
+          }
+          JSON
+          # El handler debe quedar en la raíz del zip: dist/ se comprime con "." al frente
+          cd dist
+          zip -r ../function.zip . -x "*.map" "*.ts"
+          cd ..
+          zip -r function.zip node_modules -x "*.md" "*.map" "*.ts" "*.DS_Store"
+          unzip -l function.zip | head -30
+
+      - name: Desplegar a AWS Lambda
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }} # Obligatorio para AWS Learner Lab
+          AWS_DEFAULT_REGION: ${{ secrets.AWS_REGION || 'us-east-1' }} # Cambia a 'us-east-2' si tu Lambda fue creada en Ohio
+        run: |
+          aws lambda update-function-code \
+            --function-name crud_usuarios \
+            --zip-file fileb://function.zip \
+            --region "$AWS_DEFAULT_REGION"
+
+          aws lambda wait function-updated \
+            --function-name crud_usuarios \
+            --region "$AWS_DEFAULT_REGION"
+
+          aws lambda update-function-configuration \
+            --function-name crud_usuarios \
+            --handler crud_usuarios.handler \
+            --region "$AWS_DEFAULT_REGION"
