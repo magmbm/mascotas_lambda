@@ -12,7 +12,7 @@ import {
 } from "./const.mts";
 
 /**
- * VIM
+ * VIM I
  * Configuracion del pool de conexiones a la base de datos.
  * El pool es un singleton reutilizado entre invocaciones: no se abre
  * una conexion nueva por cada request.
