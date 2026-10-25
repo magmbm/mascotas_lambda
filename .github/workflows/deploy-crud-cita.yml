@@ -1,0 +1,98 @@
+name: Deploy CRUD Citas
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'CRUDCita/**'
+      - 'package.json'
+      - 'package-lock.json'
+  workflow_dispatch:
+
+jobs:
+  deploy-lambda:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout del código
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Instalar dependencias
+        run: npm ci
+
+      # Se compila CRUDCita directamente: tsconfig.build.json está
+      # configurado para CRUDMascota y no emite crud_cita.mjs.
+      - name: Compilar TypeScript
+        run: |
+          rm -rf dist
+          npx tsc --ignoreConfig CRUDCita/crud_cita.mts \
+            --outDir dist \
+            --rootDir CRUDCita \
+            --target ES2022 \
+            --lib ES2022 \
+            --module nodenext \
+            --moduleResolution nodenext \
+            --allowImportingTsExtensions \
+            --rewriteRelativeImportExtensions \
+            --strict \
+            --esModuleInterop \
+            --skipLibCheck \
+            --resolveJsonModule \
+            --types node,pg
+
+          # El handler debe quedar en la raíz del zip
+          test -f dist/crud_cita.mjs
+
+      - name: Dejar solo dependencias de producción
+        run: npm prune --omit=dev
+
+      - name: Empaquetar la lambda
+        run: |
+          # 1. Crear package.json mínimo para ESM
+          cat > dist/package.json <<'JSON'
+          {
+            "name": "crud-cita",
+            "version": "1.0.0",
+            "type": "module",
+            "dependencies": {
+              "pg": "^8.23.0"
+            }
+          }
+          JSON
+
+          # 2. Comprimir desde la raíz de dist/
+          cd dist
+          zip -r ../function.zip . -x "*.map" "*.ts"
+          cd ..
+          zip -r function.zip node_modules -x "*.md" "*.map" "*.ts" "*.DS_Store"
+
+          # 3. Mostrar el contenido del zip para verificar que crud_cita.mjs esté en la raíz
+          unzip -l function.zip | head -20
+
+      - name: Desplegar a AWS Lambda
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }}
+          AWS_DEFAULT_REGION: ${{ secrets.AWS_REGION || 'us-east-1' }}
+        run: |
+          aws lambda update-function-code \
+            --function-name crud_citas \
+            --zip-file fileb://function.zip \
+            --region "$AWS_DEFAULT_REGION"
+
+          aws lambda wait function-updated \
+            --function-name crud_citas \
+            --region "$AWS_DEFAULT_REGION"
+
+          aws lambda update-function-configuration \
+            --function-name crud_citas \
+            --handler crud_cita.handler \
+            --region "$AWS_DEFAULT_REGION"
