@@ -29,7 +29,7 @@ export const TABLA_USUARIO = "usuario";
 export const COLUMNAS_USUARIO = [
     "nombre_usuario",
     "papellido_usuario",
-    "sapellidp_usuario",
+    "sapellido_usuario",
     "email_usuario",
     "numrun_usuario",
     "dvrun_usuario"
