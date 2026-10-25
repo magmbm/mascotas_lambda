@@ -38,7 +38,7 @@ jobs:
           # 1. Crear package.json mínimo para ESM
           cat > dist/package.json <<'JSON'
           {
-            "name": "crud_usuario",
+            "name": "crud-usuario",
             "version": "1.0.0",
             "type": "module",
             "dependencies": {
