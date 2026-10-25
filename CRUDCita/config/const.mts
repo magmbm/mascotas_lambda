@@ -6,7 +6,7 @@
 
 // --- Conexion a la base de datos (Supabase / Postgres) ---
 export const DB_PROYECTO = "wppainfuspxreudrrsqy";
-export const DB_REGION = "us-east-2";
+export const DB_REGION = "us-west-2";
 export const DB_HOST = `aws-0-${DB_REGION}.pooler.supabase.com`;
 export const DB_PUERTO = 5432;
 export const DB_BASE_DATOS = "postgres";
