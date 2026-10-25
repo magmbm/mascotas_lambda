@@ -5,6 +5,7 @@ on:
     branches:
       - main
     paths:
+      - '.github/workflows/deploy-crud-usuarios.yml'
       - 'CRUDUsuarios/**'
       - 'tsconfig.build.json'
       - 'package.json'
@@ -27,8 +28,28 @@ jobs:
       - name: Instalar dependencias
         run: npm ci
 
+      # Se compila CRUDUsuarios directamente: tsconfig.build.json está
+      # configurado para CRUDMascota y no emite crud_usuario.mjs.
       - name: Compilar TypeScript
-        run: npm run build:crud
+        run: |
+          rm -rf dist
+          npx tsc --ignoreConfig CRUDUsuarios/crud_usuario.mts \
+            --outDir dist \
+            --rootDir CRUDUsuarios \
+            --target ES2022 \
+            --lib ES2022 \
+            --module nodenext \
+            --moduleResolution nodenext \
+            --allowImportingTsExtensions \
+            --rewriteRelativeImportExtensions \
+            --strict \
+            --esModuleInterop \
+            --skipLibCheck \
+            --resolveJsonModule \
+            --types node,pg
+
+          # El handler debe quedar en la raíz del zip
+          test -f dist/crud_usuario.mjs
 
       - name: Dejar solo dependencias de producción
         run: npm prune --omit=dev
@@ -47,18 +68,13 @@ jobs:
           }
           JSON
 
-          # 2. Si el compilado quedó dentro de dist/CRUDUsuarios/, mover su contenido a la raíz de dist/
-          if [ -d "dist/CRUDUsuarios" ]; then
-            cp -r dist/CRUDUsuarios/* dist/
-          fi
-
-          # 3. Comprimir desde la raíz de dist/
+          # 2. Comprimir desde la raíz de dist/
           cd dist
           zip -r ../function.zip . -x "*.map" "*.ts"
           cd ..
           zip -r function.zip node_modules -x "*.md" "*.map" "*.ts" "*.DS_Store"
 
-          # 4. Mostrar el contenido del zip para verificar que crud_usuario.mjs / .js esté en la raíz
+          # 3. Mostrar el contenido del zip para verificar que crud_usuario.mjs esté en la raíz
           unzip -l function.zip | head -20
 
       - name: Desplegar a AWS Lambda
