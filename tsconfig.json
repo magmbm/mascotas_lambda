@@ -12,5 +12,5 @@
     "resolveJsonModule": true,
     "types": ["node", "pg"]
   },
-  "include": ["CRUDMascota/**/*.mts", "CRUDCita/**/*.mts", "Cognito_sync/**/*.mts", "CRUDUsuarios/**/*.mts"]
+  "include": ["CRUDMascota/**/*.mts", "CRUDCita/**/*.mts", "GETCitas/**/*.mts", "Cognito_sync/**/*.mts", "CRUDUsuarios/**/*.mts"]
 }
