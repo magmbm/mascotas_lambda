@@ -33,7 +33,7 @@ export class CitaRepository {
             cita.fecha_hora_cita,
             cita.motivo_cita,
             cita.nombre_mascota,
-            cita.especia_mascota,
+            cita.especie_mascota,
             cita.fk_owner,
             cita.fk_vet
         ]);

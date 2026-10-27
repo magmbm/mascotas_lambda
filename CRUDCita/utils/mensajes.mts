@@ -27,12 +27,10 @@ const ALIAS_CAMPOS: Record<string, string> = {
     nombre: "nombre_mascota",
     nombreMascota: "nombre_mascota",
     mascotaNombre: "nombre_mascota",
-    especie: "especia_mascota",
-    especia: "especia_mascota",
-    especieMascota: "especia_mascota",
-    especiaMascota: "especia_mascota",
-    especie_mascota: "especia_mascota",
-    mascotaEspecie: "especia_mascota",
+    especie: "especie_mascota",
+    especieMascota: "especie_mascota",
+    especie_mascota: "especie_mascota",
+    mascotaEspecie: "especie_mascota",
     owner: "fk_owner",
     ownerId: "fk_owner",
     idOwner: "fk_owner",
@@ -52,7 +50,7 @@ const CAMPOS_CITA = [
     "fecha_hora_cita",
     "motivo_cita",
     "nombre_mascota",
-    "especia_mascota",
+    "especie_mascota",
     "fk_owner",
     "fk_vet"
 ];
@@ -234,7 +232,7 @@ export const parsearMensajeTexto = (texto: string): Record<string, unknown> | un
 
         if (coincidencia) {
             resultado.nombre_mascota = coincidencia[1].trim();
-            resultado.especia_mascota = coincidencia[2].trim();
+            resultado.especie_mascota = coincidencia[2].trim();
         } else {
             resultado.nombre_mascota = mascota.trim();
         }
