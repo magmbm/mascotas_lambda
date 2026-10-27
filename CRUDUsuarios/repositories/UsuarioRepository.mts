@@ -21,6 +21,11 @@ const QUERY_ELIMINAR = `
     RETURNING *;
 `;
 
+const QUERY_USUARIO_REGISTRADO = `
+    SELECT nombre_usuario FROM ${TABLA_USUARIO} WHERE id_usuario = $1
+`;
+
+
 /**
  * Repositorio por entidad: es el unico lugar donde se conoce el SQL
  * de la tabla usuarios. Es reutilizable por cualquier servicio.
@@ -85,6 +90,12 @@ export class UsuarioRepository {
         const res = await pool.query(QUERY_ELIMINAR, [id]);
 
         return res.rows[0] ?? null;
+    }
+
+    public async usuarioRegistrado(email: string) : Promise<boolean | null> {
+        const res= await pool.query(QUERY_USUARIO_REGISTRADO, [email]);
+        if (res.rows[0].nombre_usuario!= "") return true;
+        return false;
     }
 }
 

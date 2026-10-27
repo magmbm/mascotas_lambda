@@ -2,6 +2,7 @@ import { METODOS_PERMITIDOS } from "./config/const.mts";
 import { registrarUsuario } from "./services/postUsuarioService.mts";
 import { actualizarUsuario } from "./services/putUsuarioService.mts";
 import { eliminarUsuario } from "./services/deleteUsuarioService.mts";
+import { usuarioRegistrado } from "./services/usuarioRegistradoService.mts";
 import type { UsuarioInsert, UsuarioUpdate } from "./utils/types.mjs"
 import { ErrorValidacion } from "./utils/errores.mts";
 import { obtenerIdUsuario } from "./utils/parametros.mts";
@@ -58,6 +59,10 @@ export const handler = async (event: any): Promise<unknown> => {
                 if (headers.id_usuario!= null) {
                     const usuarios= await obtenerUsuarioPorId(headers.id_usuario);
                     return usuarios
+                }
+                if (headers.email_usuario!= null) {
+                    const registrado= await usuarioRegistrado(headers.email_usuario);
+                    return registrado;
                 }
                 const usuarios= await obtenerTodosLosUsuarios();
 
