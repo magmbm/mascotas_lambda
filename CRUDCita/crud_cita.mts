@@ -20,6 +20,41 @@ import { obtenerCitaPorId, obtenerTodasLasCitas } from "./services/getCitaServic
 
 const revisionDeMetodo = (metodo: string): boolean => METODOS_PERMITIDOS.includes(metodo);
 
+const procesarEventosSQS = async (event: any): Promise<unknown> => {
+    const resultados = [];
+
+    for (const record of event.Records) {
+        // 1. Desempaquetar la envoltura de SNS dentro de SQS
+        const snsEnvelope = JSON.parse(record.body);
+        
+        console.log("--> Asunto SNS:", snsEnvelope.Subject);
+        console.log("--> Mensaje crudo SNS:", snsEnvelope.Message);
+
+        // 2. Parsear el contenido del mensaje (si viene en formato JSON string)
+        let datosCita: any = snsEnvelope.Message;
+        if (typeof datosCita === "string") {
+            try {
+                datosCita = JSON.parse(datosCita);
+            } catch {
+                // Si es texto plano, se mantiene como string
+            }
+        }
+
+        // 3. Ejecutar la lógica de negocio (ej. registrar la cita)
+        const citaCreada = await registrarCita(datosCita as CitaInsert);
+        resultados.push(citaCreada);
+    }
+
+    return {
+        statusCode: 200,
+        body: JSON.stringify({
+            mensaje: "Mensajes de SQS procesados correctamente",
+            procesados: resultados.length,
+            resultados
+        })
+    };
+};
+
 const obtenerBody = (event: any): any => {
     const body = event?.body;
 
@@ -40,6 +75,11 @@ const obtenerBody = (event: any): any => {
 
 export const handler = async (event: any): Promise<unknown> => {
     try {
+        if (Array.isArray(event?.Records)) {
+            console.log(`Procesando ${event.Records.length} mensaje(s) de SQS...`);
+            return await procesarEventosSQS(event);
+        }
+
         const metodo = String(event?.method || event?.httpMethod || "").toUpperCase();
         const headers = event?.headers || event?.header || {};
 

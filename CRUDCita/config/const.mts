@@ -30,6 +30,8 @@ export const TABLA_CITAS = "citas";
 export const COLUMNAS_CITA = [
     "fecha_hora_cita",
     "motivo_cita",
+    "nombre_mascota",
+    "especia_mascota",
     "fk_owner",
     "fk_vet"
 ];

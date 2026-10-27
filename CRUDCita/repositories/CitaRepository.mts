@@ -4,7 +4,7 @@ import type { Cita, CitaInsert, CitaUpdate } from "../utils/types.mts";
 
 const QUERY_INSERTAR = `
     INSERT INTO ${TABLA_CITAS} (${COLUMNAS_CITA.join(", ")})
-    VALUES ($1, $2, $3, $4)
+    VALUES ($1, $2, $3, $4, $5, $6)
     RETURNING *;
 `;
 
@@ -32,6 +32,8 @@ export class CitaRepository {
         const res = await pool.query(QUERY_INSERTAR, [
             cita.fecha_hora_cita,
             cita.motivo_cita,
+            cita.nombre_mascota,
+            cita.especia_mascota,
             cita.fk_owner,
             cita.fk_vet
         ]);
