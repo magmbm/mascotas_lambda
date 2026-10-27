@@ -61,7 +61,6 @@ export const handler = async (event: any): Promise<unknown> => {
                     return usuarios
                 }
                 if (headers.email_usuario!= null) {
-                    return headers.email_usuario;
                     const registrado= await usuarioRegistrado(headers.email_usuario);
                     return registrado;
                 }

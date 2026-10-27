@@ -22,7 +22,7 @@ const QUERY_ELIMINAR = `
 `;
 
 const QUERY_USUARIO_REGISTRADO = `
-    SELECT nombre_usuario FROM ${TABLA_USUARIO} WHERE id_usuario = $1
+    SELECT nombre_usuario FROM ${TABLA_USUARIO} WHERE email_usuario = $1
 `;
 
 

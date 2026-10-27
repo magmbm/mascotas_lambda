@@ -6,7 +6,7 @@ import { ErrorNoEncontrado, ErrorValidacion } from "../utils/errores.mts";
  * Servicio de la operacion GET: devuelve una usuario por su id.
  * Recibe una primitiva (id) y devuelve la usuario encontrada.
  */
-export const usuarioRegistrado = async (email : string): Promise<Boolean> => {
+export const usuarioRegistrado = async (email : string): Promise<boolean> => {
     if (!email || email== "") {
         throw new ErrorValidacion("El email del usuario debe ser valido");
     }
