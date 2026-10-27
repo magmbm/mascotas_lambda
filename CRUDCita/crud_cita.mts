@@ -11,6 +11,7 @@ import {
     respuestaProhibido
 } from "./utils/respuestas.mts";
 import { obtenerCitaPorId, obtenerTodasLasCitas } from "./services/getCitaService.mts";
+import { extraerMensaje, obtenerIdMensaje, obtenerOperacion } from "./utils/mensajes.mts";
 
 /**
  * Handler (controller) de la lambda CRUD de citas.
@@ -20,35 +21,86 @@ import { obtenerCitaPorId, obtenerTodasLasCitas } from "./services/getCitaServic
 
 const revisionDeMetodo = (metodo: string): boolean => METODOS_PERMITIDOS.includes(metodo);
 
-const procesarEventosSQS = async (event: any): Promise<unknown> => {
-    const resultados = [];
+/**
+ * Ejecuta la operacion indicada por el mensaje.
+ * Si el BFF no envia operacion se asume POST (alta de cita).
+ */
+const procesarMensaje = async (mensaje: any): Promise<unknown> => {
+    const operacion = obtenerOperacion(mensaje);
 
-    for (const record of event.Records) {
-        // 1. Desempaquetar la envoltura de SNS dentro de SQS
-        const snsEnvelope = JSON.parse(record.body);
-        
-        console.log("--> Asunto SNS:", snsEnvelope.Subject);
-        console.log("--> Mensaje crudo SNS:", snsEnvelope.Message);
+    switch (operacion) {
+        case "POST":
+            return registrarCita(mensaje as CitaInsert);
 
-        // 2. Parsear el contenido del mensaje (si viene en formato JSON string)
-        let datosCita: any = snsEnvelope.Message;
-        if (typeof datosCita === "string") {
-            try {
-                datosCita = JSON.parse(datosCita);
-            } catch {
-                // Si es texto plano, se mantiene como string
+        case "PUT": {
+            const id = obtenerIdMensaje(mensaje);
+
+            if (id === undefined) {
+                throw new ErrorValidacion("El mensaje debe incluir 'id_cita' para actualizar");
             }
+
+            return actualizarCita(id, mensaje as CitaUpdate);
         }
 
-        // 3. Ejecutar la lógica de negocio (ej. registrar la cita)
-        const citaCreada = await registrarCita(datosCita as CitaInsert);
-        resultados.push(citaCreada);
+        case "DELETE": {
+            const id = obtenerIdMensaje(mensaje);
+
+            if (id === undefined) {
+                throw new ErrorValidacion("El mensaje debe incluir 'id_cita' para eliminar");
+            }
+
+            return eliminarCita(id);
+        }
+
+        default:
+            throw new ErrorValidacion(`Operacion '${operacion}' no soportada por esta lambda`);
+    }
+};
+
+/**
+ * Procesa un lote de SQS. Los mensajes fallidos se devuelven en
+ * batchItemFailures para que SQS los reintente (requiere
+ * "Report batch item failures" habilitado en el event source mapping).
+ */
+const procesarEventosSQS = async (event: any): Promise<unknown> => {
+    const fallos: { itemIdentifier: string }[] = [];
+    const resultados: unknown[] = [];
+
+    for (const record of event.Records) {
+        try {
+            const mensaje = extraerMensaje(record);
+            console.log("Mensaje SQS recibido:", JSON.stringify(mensaje));
+
+            resultados.push(await procesarMensaje(mensaje));
+        } catch (err) {
+            console.error(`Error procesando el mensaje SQS ${record?.messageId}:`, err);
+            fallos.push({ itemIdentifier: record?.messageId });
+        }
+    }
+
+    console.log(`SQS: ${resultados.length} procesado(s), ${fallos.length} fallido(s)`);
+
+    return { batchItemFailures: fallos };
+};
+
+/**
+ * Procesa una invocacion directa desde SNS. Si un mensaje falla se
+ * lanza el error para que SNS reintente o lo derive a la DLQ.
+ */
+const procesarEventosSNS = async (event: any): Promise<unknown> => {
+    const resultados: unknown[] = [];
+
+    for (const record of event.Records) {
+        const mensaje = extraerMensaje(record);
+        console.log("Mensaje SNS recibido:", JSON.stringify(mensaje));
+
+        resultados.push(await procesarMensaje(mensaje));
     }
 
     return {
         statusCode: 200,
         body: JSON.stringify({
-            mensaje: "Mensajes de SQS procesados correctamente",
+            mensaje: "Mensajes de SNS procesados correctamente",
             procesados: resultados.length,
             resultados
         })
@@ -75,9 +127,17 @@ const obtenerBody = (event: any): any => {
 
 export const handler = async (event: any): Promise<unknown> => {
     try {
-        if (Array.isArray(event?.Records)) {
-            console.log(`Procesando ${event.Records.length} mensaje(s) de SQS...`);
+        const registros = Array.isArray(event?.Records) ? event.Records : [];
+        const primerRegistro = registros[0];
+
+        if (registros.length > 0 && (primerRegistro?.eventSource === "aws:sqs" || primerRegistro?.body !== undefined)) {
+            console.log(`Procesando ${registros.length} mensaje(s) de SQS...`);
             return await procesarEventosSQS(event);
+        }
+
+        if (registros.length > 0 && (primerRegistro?.EventSource === "aws:sns" || primerRegistro?.Sns !== undefined)) {
+            console.log(`Procesando ${registros.length} mensaje(s) de SNS...`);
+            return await procesarEventosSNS(event);
         }
 
         const metodo = String(event?.method || event?.httpMethod || "").toUpperCase();

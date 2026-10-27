@@ -31,9 +31,8 @@ export const COLUMNAS_CITA = [
     "fecha_hora_cita",
     "motivo_cita",
     "nombre_mascota",
-    "especia_mascota",
-    "fk_owner",
-    "fk_vet"
+    "especie_mascota",
+    "fk_owner"
 ];
 
 // --- Metodos HTTP soportados por la lambda CRUD ---
