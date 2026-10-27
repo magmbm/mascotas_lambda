@@ -94,7 +94,7 @@ export class UsuarioRepository {
 
     public async usuarioRegistrado(email: string) : Promise<boolean | null> {
         const res= await pool.query(QUERY_USUARIO_REGISTRADO, [email]);
-        if (res.rows[0].nombre_usuario!= "") return true;
+        if (res.rows[0].nombre_usuario!= "" || res.rows[0].nombre_usuario== undefined) return true;
         return false;
     }
 }
