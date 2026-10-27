@@ -1,22 +1,15 @@
 import { usuarioRepository } from "../repositories/UsuarioRepository.mjs";
 import type { Usuario } from "../utils/types.mts";
-import { ErrorNoEncontrado, ErrorValidacion } from "../utils/errores.mts";
+import { ErrorValidacion } from "../utils/errores.mts";
 
 /**
- * Servicio de la operacion GET: devuelve una usuario por su id.
- * Recibe una primitiva (id) y devuelve la usuario encontrada.
+ * Servicio de la operacion GET: dado un email, devuelve el usuario
+ * registrado completo o null si no existe.
  */
-export const usuarioRegistrado = async (email : string): Promise<boolean> => {
-    if (!email || email== "") {
+export const usuarioRegistrado = async (email: string): Promise<Usuario | null> => {
+    if (typeof email !== "string" || email.trim() === "") {
         throw new ErrorValidacion("El email del usuario debe ser valido");
     }
 
-    const registrado = await usuarioRepository.usuarioRegistrado(email);
-
-    if (!registrado) {
-        return false;
-    }
-
-    return true;
+    return usuarioRepository.usuarioRegistrado(email.trim());
 };
-

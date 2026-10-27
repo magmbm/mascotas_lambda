@@ -22,9 +22,9 @@ const QUERY_ELIMINAR = `
 `;
 
 const QUERY_USUARIO_REGISTRADO = `
-    SELECT EXISTS (
-        SELECT 1 FROM ${TABLA_USUARIO} WHERE email_usuario = $1
-    ) AS registrado;
+    SELECT * FROM ${TABLA_USUARIO}
+    WHERE LOWER(email_usuario) = LOWER($1)
+    LIMIT 1;
 `;
 
 
@@ -94,11 +94,14 @@ export class UsuarioRepository {
         return res.rows[0] ?? null;
     }
 
-    public async usuarioRegistrado(email: string): Promise<boolean> {
+    /**
+     * Busca un usuario por su email y devuelve el registro completo,
+     * o null si no esta registrado.
+     */
+    public async usuarioRegistrado(email: string): Promise<Usuario | null> {
         const res = await pool.query(QUERY_USUARIO_REGISTRADO, [email]);
         
-        // PostgreSQL devuelve 'true' o 'false' directamente como boolean
-        return res.rows[0].registrado;
+        return (res.rows[0] as Usuario) ?? null;
     }
 
 }
