@@ -41,8 +41,8 @@ const procesarMensaje = async (mensaje: any): Promise<unknown> => {
                 await sendEmail({
                     to: 'mag.burdiles@duocuc.cl',
                     subject: `Cita agendada para ${mascota}`,
-                    html: `<h1>Cita Veterinaria</h1><h3>` + 
-                    `Este ${fecha} de ${mesFormat(mes)} a las ${hora}hrs tendrá su cita para ${mensaje.motivo_cita}</h3>,`
+                    html: `<h1>Cita Veterinaria</h1><p>` + 
+                    `Este ${fecha} de ${mesFormat(mes)} a las ${hora}hrs tendrá su cita para ${mensaje.motivo_cita}</p>,`
                 })
             }
             return result;
