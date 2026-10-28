@@ -35,12 +35,13 @@ const procesarMensaje = async (mensaje: any): Promise<unknown> => {
             if (result!= null) {
                 const fecha= new Date(mensaje.fecha_hora_cita).getDate();
                 const hora= new Date(mensaje.fecha_hora_cita).getHours();
+                const mes= new Date(mensaje.fecha_hora_cita).getMonth();
                 const mascota= mensaje.nombre_mascota;
                 await sendEmail({
                     to: 'mag.burdiles@duocuc.cl',
                     subject: `Cita agendada para ${mascota}`,
-                    html: `<h1>Cita Veterinaria</h1><p>` + 
-                    `Este ${fecha} a las ${hora} tendrá su cita para ${mensaje.motivo_cita}</p>,`
+                    html: `<h1>Cita Veterinaria</h1><h3>` + 
+                    `Este ${fecha} de ${mes} a las ${hora}hrs tendrá su cita para ${mensaje.motivo_cita}</h3>,`
                 })
             }
             return result;
