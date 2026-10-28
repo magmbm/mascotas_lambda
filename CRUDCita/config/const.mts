@@ -12,10 +12,14 @@ export const DB_PUERTO = 5432;
 export const DB_BASE_DATOS = "postgres";
 export const DB_USUARIO = `postgres.${DB_PROYECTO}`;
 export const DB_SSL_REJECT_UNAUTHORIZED = false;
+export const EMAIL_HOST="smtp.gmail.com";
+export const EMAIL_PORT=465;
 
 // --- Variables de entorno ---
 export const ENV_DB_PASSWORD = "SUPABASE_PASSWORD";
 export const ENV_DB_PASSWORD_ALTERNATIVO = "SUPABASE_PASS";
+export const ENV_EMAIL_PASS = "EMAIL_PASS";
+export const ENV_EMAIL_ADDRESS= "EMAIL_ADDRESS";
 
 // --- Pool de conexiones ---
 export const DB_POOL_MAX_CONEXIONES = 10;

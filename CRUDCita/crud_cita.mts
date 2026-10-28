@@ -1,4 +1,5 @@
 import { METODOS_PERMITIDOS } from "./config/const.mts";
+import { sendEmail } from './email/emailService.mts';
 import { registrarCita } from "./services/postCitaService.mts";
 import { actualizarCita } from "./services/putCitaService.mts";
 import { eliminarCita } from "./services/deleteCitaService.mts";
@@ -30,7 +31,19 @@ const procesarMensaje = async (mensaje: any): Promise<unknown> => {
 
     switch (operacion) {
         case "POST":
-            return registrarCita(mensaje as CitaInsert);
+            const result= registrarCita(mensaje as CitaInsert);
+            if (result!= null) {
+                const fecha= new Date(mensaje.fecha_hora_cita).getDate();
+                const hora= new Date(mensaje.fecha_hora_cita).getHours();
+                const mascota= mensaje.nombre_mascota;
+                await sendEmail({
+                    to: 'mag.burdiles@duocuc.cl',
+                    subject: `Cita agendada para ${mascota}`,
+                    html: `<h1>Cita Veterinaria</h1><p>` + 
+                    `Este ${fecha} a las ${hora} tendrá su cita para ${mensaje.motivo_cita}</p>,`
+                })
+            }
+            return result;
 
         case "PUT": {
             const id = obtenerIdMensaje(mensaje);

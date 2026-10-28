@@ -19,3 +19,10 @@ export type CitaInsert = {
 }
 
 export type CitaUpdate = Partial<CitaInsert>
+
+export interface SendEmailOptions {
+  to: string | string[];
+  subject: string;
+  text?: string;
+  html?: string;
+}
