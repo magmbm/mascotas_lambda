@@ -13,6 +13,7 @@ import {
 } from "./utils/respuestas.mts";
 import { obtenerCitaPorId, obtenerTodasLasCitas } from "./services/getCitaService.mts";
 import { extraerMensaje, obtenerIdMensaje, obtenerOperacion } from "./utils/mensajes.mts";
+import { mesFormat } from "./utils/dateFormater.mts";
 
 /**
  * Handler (controller) de la lambda CRUD de citas.
@@ -41,7 +42,7 @@ const procesarMensaje = async (mensaje: any): Promise<unknown> => {
                     to: 'mag.burdiles@duocuc.cl',
                     subject: `Cita agendada para ${mascota}`,
                     html: `<h1>Cita Veterinaria</h1><h3>` + 
-                    `Este ${fecha} de ${mes} a las ${hora}hrs tendrá su cita para ${mensaje.motivo_cita}</h3>,`
+                    `Este ${fecha} de ${mesFormat(mes)} a las ${hora}hrs tendrá su cita para ${mensaje.motivo_cita}</h3>,`
                 })
             }
             return result;
