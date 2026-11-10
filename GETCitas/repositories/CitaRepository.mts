@@ -6,8 +6,15 @@ const QUERY_OBTENER_POR_ID = `
     SELECT * FROM ${TABLA_CITAS} WHERE id_cita = $1;
 `;
 
+const CAMPOS_QUERY= `id_cita, created_at, fecha_hora_cita, nombre_mascota, 
+    especie_mascota, fk_owner, fk_vet, fk_motivo, 
+    ${TABLA_MOTIVOS}.titulo_motivo, 
+    ${TABLA_MOTIVOS}.desc_motivo, 
+    ${TABLA_MOTIVOS}.precio_motivo`;
+
 const QUERY_OBTENER_TODOS = `
-    SELECT * FROM ${TABLA_CITAS} INNER JOIN motivos ON ${TABLA_CITAS}.fk_motivo = ${TABLA_MOTIVOS}.id_motivo;
+    SELECT ${CAMPOS_QUERY} FROM ${TABLA_CITAS} INNER JOIN motivos 
+    ON ${TABLA_CITAS}.fk_motivo = ${TABLA_MOTIVOS}.id_motivo;
 `;
 
 /**
