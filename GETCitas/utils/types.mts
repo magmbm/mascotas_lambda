@@ -16,4 +16,4 @@ export type Motivo = {
     precio_motivo : number
 }
 
-//
+//P
