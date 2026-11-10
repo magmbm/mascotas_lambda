@@ -1,6 +1,6 @@
 import { COLUMNAS_CITA } from "../config/const.mts";
 import { citaRepository } from "../repositories/CitaRepository.mts";
-import type { Cita, CitaInsert } from "../utils/types.mts";
+import type { Cita, CitaInsert, Motivo } from "../utils/types.mts";
 import { ErrorValidacion } from "../utils/errores.mts";
 
 /**
@@ -13,7 +13,7 @@ const REGLAS: [keyof CitaInsert, (valor: unknown) => boolean, string][] = [
         (valor) => typeof valor === "string" && !Number.isNaN(Date.parse(valor)),
         "El campo 'fecha_hora_cita' debe ser una fecha valida (ISO 8601)"
     ],
-    ["motivo_cita", (valor) => typeof valor === "string", "El campo 'motivo_cita' debe ser un texto"],
+    ["fk_motivo", (valor) => typeof valor === "object", "El campo 'fk_motivo' debe ser objeto"],
     ["nombre_mascota", (valor) => typeof valor === "string", "El campo 'nombre_mascota' debe ser un texto"],
     ["especie_mascota", (valor) => typeof valor === "string", "El campo 'especie_mascota' debe ser un texto"],
     ["fk_owner", (valor) => typeof valor === "number" && Number.isInteger(valor), "El campo 'fk_owner' debe ser un numero entero"],
