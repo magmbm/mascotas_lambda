@@ -1,5 +1,5 @@
 import { pool } from "../config/dbConfig.mts";
-import { TABLA_CITAS } from "../config/const.mts";
+import { TABLA_CITAS, TABLA_MOTIVOS } from "../config/const.mts";
 import type { Cita } from "../utils/types.mts";
 
 const QUERY_OBTENER_POR_ID = `
@@ -7,7 +7,7 @@ const QUERY_OBTENER_POR_ID = `
 `;
 
 const QUERY_OBTENER_TODOS = `
-    SELECT * FROM ${TABLA_CITAS};
+    SELECT * FROM ${TABLA_CITAS} INNER JOIN motivos ON ${TABLA_CITAS}.fk_motivo = ${TABLA_MOTIVOS}.id_motivo;
 `;
 
 /**

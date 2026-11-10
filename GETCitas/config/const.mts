@@ -24,6 +24,7 @@ export const DB_POOL_CONNECTION_TIMEOUT_MS = 10000;
 
 // --- Tablas ---
 export const TABLA_CITAS = "citas";
+export const TABLA_MOTIVOS = "motivos";
 
 // --- Metodos HTTP soportados por la lambda (solo lectura) ---
 export const METODOS_PERMITIDOS: string[] = ["GET"];
