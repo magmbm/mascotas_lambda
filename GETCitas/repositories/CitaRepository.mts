@@ -26,7 +26,7 @@ export class CitaRepository {
     /** Lista todas las citas de la tabla. */
     public async findAll(): Promise<Cita[]> {
         const res = await pool.query(QUERY_OBTENER_TODOS);
-
+        console.log(res.rows);
         return res.rows as Cita[];
     }
 }
